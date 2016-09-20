@@ -1,0 +1,20 @@
+---
+name: ssh
+templates:
+  bin/ssh_ctl.sh: bin/ssh_ctl.sh
+  bin/monit_debugger: bin/monit_debugger
+  conf/id_rsa: conf/id_rsa
+  conf/id_rsa.pub: conf/id_rsa.pub
+  conf/authorized_keys: conf/authorized_keys
+  conf/ssh_config: conf/ssh_config
+  conf/sshd_config: conf/sshd_config
+packages: []
+
+properties:
+  ssh.private_key:
+    description: private key
+  ssh.public_key:
+    description: public key
+  ssh.users:
+    default: none
+    description: 

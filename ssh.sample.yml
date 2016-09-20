@@ -1,0 +1,132 @@
+---
+<%
+director_uuid = "2439a81c-6793-4d8d-8a34-5955714a0ee1"
+deployment_name = "ssh"
+release_name = "emc-ssh-dev"
+release_version = "0+dev.1"
+stemcell_name = "bosh-vsphere-esxi-ubuntu-trusty-go_agent"
+stemcell_version = "2732"
+
+ssh_hosts = ["10.62.51.84", "10.62.51.85"]
+%>
+
+name: <%= deployment_name %>
+director_uuid: <%= director_uuid %>
+
+releases:
+- name: <%= release_name %>
+  version: <%= release_version %>
+
+compilation:
+  workers: 1
+  cloud_properties:
+    cpu: 2
+    disk: 3000
+    ram: 4096
+  network: default
+  reuse_compilation_vms: true
+
+networks:
+  - name: default
+    subnets:
+    - reserved:
+        - 10.62.51.2 - 10.62.51.83
+        - 10.62.51.90
+        - 10.62.51.95 - 10.62.51.254
+      static: <%= ssh_hosts %>
+      gateway: 10.62.51.1
+      range: 10.62.51.0/24
+      dns:
+      - 10.62.51.101
+      cloud_properties:
+       name : lab network
+
+update:
+  canary_watch_time: 10000 - 20000
+  update_watch_time: 10000 - 20000
+  max_in_flight: 1
+  max_errors: 1
+  canaries: 1
+
+resource_pools:
+- name: ssh
+  network: default
+  stemcell:
+    name: <%= stemcell_name %>
+    version: <%= stemcell_version %>
+  size: 2
+  cloud_properties:
+    cpu: 2
+    ram: 2048
+    disk: 5000
+
+jobs:
+- name: ssh
+  templates:
+  - name: ssh
+    release: <%= release_name %>
+  instances: 2
+  resource_pool: ssh
+  networks:
+  - name: default
+    static_ips: <%= ssh_hosts %>
+
+
+properties:
+  user_0: &user_0
+    name: pgsql
+    password: changeme
+    account_expiry_date: -1 # With format "YYYY-MM-DD", the value "-1" means account will never expire.
+    password_age: 90 # Set the number of days during which a password is valid, the value "99999" means it'll never expire.
+  user_1: &user_1
+    name: pgpool
+    password: changeme
+    account_age: -1
+    password_age: 90
+  ssh:
+    users:
+    - *user_0
+    - *user_1
+    private_key: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEowIBAAKCAQEAx8q7OB5rBE0V4rXQIPQFYlXKV0b6x6XCbPd6eISxiFNb2im3
+      7/fhGBoVy47HcsihzG9AqWKih2pskrTdkGjNIKusJcB3CEOwBx6qb8TgtNYf3W9O
+      inoa87Mvwv2v4ZGPKWEtEOvBbSOISqloF9DmJn5ZG+yIC1w7UfTCTKkp6HviYHtG
+      2gIhAvzj0TQZkXmUWmhPS6d0Aonz8PyqSoyUJvIOODX+p1NOIvyTyBQ6aQ44lpNp
+      Y5OxcNejRH1nRniEITl4MiQNajVUQi/0ghs40C5T49vEZGPOtGmPJ9ZYWkgHHZ27
+      Ue0hezU1jnRXny8d0neSxcIQbpCsZfv9jAz+RQIDAQABAoIBABvepdsgMyF4d1MW
+      tZ/DKnUbLoyaNCVhdAurQgRJzlIL/sYiB6yL0XSBPwUUN7JFVnykEEsQnUdyiw6z
+      +CxK0kJ6cBscC/61Inr7xh6tQgM3014aRsR+YAAawNDcfopiuau2CIlRubu1ty9j
+      Dkg0Ncas3VVN23RqO0Qldm0nM9dgIYBQjnCGPEzo4JbrLiFxVwgzN8aZz86RT8yG
+      kjMkxWnUPQsV2CYDlstPzghSd2YOFwu9r+9Sp8huyhdsNZxb6xgD1VcQqdmO4iUM
+      uxdblC9TcrNA6zfsPpaQOOVpSFNZrFhneS1gjc9XRCl9Pw8MpXoXfmUdJNcKlxx8
+      S756dwECgYEA63mScyPgxHHe8L2YDfQ2nhWyJVF1SJn+8ISUlx5BLUVqNSX5ybHV
+      WpJBAInVJCmNVMb+ikjk5XOfQqIOrkQDZMeXKPRwBkemHvfOaanqJPENtc4OFjBz
+      EUggBuGLmLKY3QdWe9HiB1MF1LhHEzssQsczqiaOMkz8ycd1fOTj1aECgYEA2TTs
+      VY6vCCKHluXNv6dbep8nLukukuU8Qn1r+ZYsW//IgnM2H65REY8Xf4aXW+dr6cCN
+      NTZG4EngGTjMVaPvD6un30LpYBCsVtbt/+SbKhSRE0jVu2WFI7jS31Em6aQn65U/
+      TpkHfA6d1aR18lWum+fJaVxmuMU9sFo3MVPuXiUCgYEAsbtPOKzp6Bxyw463CEE+
+      QE/r6JL1TVk+vde0N+PUGhF8uqTxRrV9biFaAsgGIodib4zLbyDZ8/4zRR4AqrQX
+      Q6gKhhUJwROvZUxxdfuUCVIQoRroMwNatr6Tvd3beePD0YDKXCbszc5yZj65FuDg
+      5X5plpIHXhwR6VMtcJlrBkECgYAUiCcq80DiYPk2L2Tij/xau/6lNY+cfSTUGC0D
+      u8lXrPcUNbXRCtZI9aDAAkX+fwK5ZuUyOX47p2ASokbWdZecgJpuxVFwLkNMNibr
+      QH3WXXlVPFZPz4nlVYxBZddq0IShhUslr9uAQ5Vx44jurmDCBggI+J4RKzvolq6O
+      8CMhLQKBgF/p+6S+H7ThiHTLpq55OTkmDZWSV7JWThgggCBeMKTEfSWOyMRrGsU+
+      8miZ+uxtqyBeVoPV9eRa0JIn8aWHZy9OjeW7pspECl59OQx8khrec5nmD5gqWQIG
+      uc3TI43C/bpkaRpg6LW0voBlscJjXGU0X6oEmdgZtCl9Czoctp4y
+      -----END RSA PRIVATE KEY-----
+    public_key: >
+        ssh-rsa 
+        AAAAB3NzaC1yc2EAAAADAQABAAABAQDHyrs4HmsETRXitdAg9AViVcpXRvrHpcJs93p4hLGIU1vaKbfv9+EYGhXLjsdyyKHMb0CpYqKHamyStN2QaM0gq6wlwHcIQ7AHHqpvxOC01h/db06Kehrzsy/C/a/hkY8pYS0Q68FtI4hKqWgX0OYmflkb7IgLXDtR9MJMqSnoe+Jge0baAiEC/OPRNBmReZRaaE9Lp3QCifPw/KpKjJQm8g44Nf6nU04i/JPIFDppDjiWk2ljk7Fw16NEfWdGeIQhOXgyJA1qNVRCL/SCGzjQLlPj28RkY860aY8n1lhaSAcdnbtR7SF7NTWOdFefLx3Sd5LFwhBukKxl+/2MDP5F
+
+
+
+
+
+
+
+
+
+
+
+

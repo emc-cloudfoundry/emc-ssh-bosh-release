@@ -1,0 +1,4 @@
+check file sshd with path /root/.ssh/authorized_keys
+  start program "/var/vcap/jobs/ssh/bin/monit_debugger ssh_ctl /var/vcap/jobs/ssh/bin/ssh_ctl.sh start" with timeout 240 seconds
+  stop program "/var/vcap/jobs/ssh/bin/monit_debugger ssh_ctl /var/vcap/jobs/ssh/bin/ssh_ctl.sh stop"
+  group vcap

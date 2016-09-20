@@ -1,0 +1,11 @@
+---
+packages: []
+jobs:
+- name: ssh
+  version: 508a58160933364f4567e1a83e313f9704ae59d1
+  fingerprint: 508a58160933364f4567e1a83e313f9704ae59d1
+  sha1: 953920b4be7f10330d6e9f015fe9f5bb5b9a7c81
+commit_hash: '00000000'
+uncommitted_changes: false
+name: emc-ssh-dev
+version: 0+dev.1
