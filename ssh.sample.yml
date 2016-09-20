@@ -1,13 +1,13 @@
 ---
 <%
-director_uuid = "2439a81c-6793-4d8d-8a34-5955714a0ee1"
+director_uuid = "2439a81c-6793-4d8d-8a34-5955714a0ee1" # change it
 deployment_name = "ssh"
 release_name = "emc-ssh-dev"
-release_version = "0+dev.1"
-stemcell_name = "bosh-vsphere-esxi-ubuntu-trusty-go_agent"
-stemcell_version = "2732"
+release_version = "0+dev.1" # change it
+stemcell_name = "bosh-vsphere-esxi-ubuntu-trusty-go_agent" # change it
+stemcell_version = "2732" # change it
 
-ssh_hosts = ["10.62.51.84", "10.62.51.85"]
+ssh_hosts = ["10.62.51.84", "10.62.51.85"] # change it, or add more nodes
 %>
 
 name: <%= deployment_name %>
@@ -26,7 +26,7 @@ compilation:
   network: default
   reuse_compilation_vms: true
 
-networks:
+networks: # change the networks section refer to your network configuration
   - name: default
     subnets:
     - reserved:
@@ -73,6 +73,8 @@ jobs:
 
 
 properties:
+  # Define users array, the elements are [user_0] and [user_1]; references of element are [&user_0] and [&user_1]
+  # Every user has four attributes, [name], [password], [account_expiry_date], [password_age].
   user_0: &user_0
     name: pgsql
     password: changeme
@@ -83,10 +85,12 @@ properties:
     password: changeme
     account_age: -1
     password_age: 90
+  # SSH job's properties from here.
   ssh:
-    users:
-    - *user_0
-    - *user_1
+    users: # The users defined in this array will be added to the hosts, and the authorized keys will be effective for these users.
+    - *user_0 # Refer to [user_0] here
+    - *user_1 # Refer to [user_1] here
+    # Private key, the content is from the file "id_rsa" what you generated just now.
     private_key: |
       -----BEGIN RSA PRIVATE KEY-----
       MIIEowIBAAKCAQEAx8q7OB5rBE0V4rXQIPQFYlXKV0b6x6XCbPd6eISxiFNb2im3
@@ -115,6 +119,7 @@ properties:
       8miZ+uxtqyBeVoPV9eRa0JIn8aWHZy9OjeW7pspECl59OQx8khrec5nmD5gqWQIG
       uc3TI43C/bpkaRpg6LW0voBlscJjXGU0X6oEmdgZtCl9Czoctp4y
       -----END RSA PRIVATE KEY-----
+    # Public key, the content is from the file "id_rsa.pub" what you generated just now.
     public_key: >
         ssh-rsa 
         AAAAB3NzaC1yc2EAAAADAQABAAABAQDHyrs4HmsETRXitdAg9AViVcpXRvrHpcJs93p4hLGIU1vaKbfv9+EYGhXLjsdyyKHMb0CpYqKHamyStN2QaM0gq6wlwHcIQ7AHHqpvxOC01h/db06Kehrzsy/C/a/hkY8pYS0Q68FtI4hKqWgX0OYmflkb7IgLXDtR9MJMqSnoe+Jge0baAiEC/OPRNBmReZRaaE9Lp3QCifPw/KpKjJQm8g44Nf6nU04i/JPIFDppDjiWk2ljk7Fw16NEfWdGeIQhOXgyJA1qNVRCL/SCGzjQLlPj28RkY860aY8n1lhaSAcdnbtR7SF7NTWOdFefLx3Sd5LFwhBukKxl+/2MDP5F
