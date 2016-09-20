@@ -45,3 +45,7 @@ Using the previous created deployment manifest, now we can deploy it:
 bosh deployment path/to/manifest.yml
 bosh -n deploy
 ```
+
+   [emc-postgresql-service-bosh-release]: <https://github.com/emc-cloudfoundry/emc-postgresql-service-bosh-release>
+
+   [sample deployment manifest file]: <https://github.com/emc-cloudfoundry/emc-ssh-bosh-release/blob/master/ssh.sample.yml>
